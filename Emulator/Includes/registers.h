@@ -11,7 +11,7 @@ public:
     bool re = false; 
 
     void update_value(uint16_t val, bool clk) {
-        if (clk) {
+        if (clk && we) {
             this->value = val;
         }
     }

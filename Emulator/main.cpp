@@ -1,8 +1,11 @@
 #include <raylib.h>
 #include <iostream>
 #include <cstdint> 
+
 #include "alu.h"
 #include "registers.h"
+#include "Memory.h"
+
 
 using namespace std;
 
@@ -17,9 +20,14 @@ typedef struct {
 
 // Emulation Globals
 
+
 bool global_clock;
 ALU global_alu;
+Register program_counter;
 RegisterFile global_registerfile;
+RAM data_memory;
+ROM instruction_memory;
+
 
 
 int main() {
