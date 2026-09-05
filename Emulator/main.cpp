@@ -2,9 +2,9 @@
 #include <iostream>
 #include <cstdint> 
 
-#include "alu.h"
-#include "registers.h"
-#include "Memory.h"
+#include "Includes/alu.h"
+#include "Includes/registers.h"
+#include "Includes/Memory.h"
 
 
 using namespace std;
@@ -42,7 +42,7 @@ int main() {
         for(int x = 0; x < emulation_screen_width; x++){
             screen[y][x].x = x;
             screen[y][x].y = y;
-            screen[y][x].pixel_color = true; 
+            screen[y][x].pixel_color = false; 
         }
     }
 
