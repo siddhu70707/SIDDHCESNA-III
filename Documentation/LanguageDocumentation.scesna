@@ -1,0 +1,87 @@
+1. Syntax Rules
+
+Case Sensitivity: Mnemonics (e.g., ADD, MOV) and register names (r0-r15, ACC, SP, MAR) are case-insensitive.
+
+Comments: Use // for single-line comments. Example: MOV r0, r1 // Copy r1 to r0
+
+Labels: Defined using the @ prefix (e.g., @LOOP). Labels store the memory address of the instruction immediately following them.
+
+Directives: Use #define to map a name to a 16-bit RAM address or constant value. Example: #define SCREEN 0x0000
+
+2. Instruction Set Reference
+
+Data Movement & Immediates
+
+MOV <dest>, <src> — Copies content from src register to dest register.
+
+LUI <dest>, <imm7> — Loads a 7-bit literal into middle bits [13:7] of dest.
+
+LLI <dest>, <imm7> — Loads a 7-bit literal into lower bits [6:0] of dest (preserves upper bits).
+
+LRI <dest>, <imm2> — Loads a 2-bit literal into top bits [15:14] of dest. Combine with LUI and LLI for full 16-bit constants.
+
+ALU-Based Operations
+Note: All ALU results are implicitly saved to the Accumulator (r13 / ACC).
+
+ADD <src1>, <src2> — Adds contents of src1 and src2.
+
+SUB <src1>, <src2> — Subtracts src2 from src1.
+
+MUL <src1>, <src2> — Multiplies src1 by src2.
+
+DIV <src1>, <src2> — Divides src1 by src2 (stores integer quotient).
+
+AND <src1>, <src2> — Bitwise AND between src1 and src2.
+
+OR <src1>, <src2> — Bitwise OR between src1 and src2.
+
+XOR <src1>, <src2> — Bitwise XOR between src1 and src2.
+
+NOT <src> — Inverts all bits of the src register.
+
+BSL <src>, <amt> — Shifts bits of src left by the value in amt.
+
+BSR <src>, <amt> — Shifts bits of src right by the value in amt.
+
+CMP <src1>, <src2> — Subtracts src2 from src1 to update internal flags (result discarded).
+
+Control Flow & Branching
+Note: All jump operations implicitly look up the 16-bit destination address inside register r12 (JTR).
+
+JMP — Unconditionally copies address from r12 into the Program Counter (PC).
+
+JZ — Copies address from r12 into PC if Zero flag is active.
+
+JG — Copies address from r12 into PC if Greater flag is active.
+
+JS — Copies address from r12 into PC if Smaller/Sign flag is active.
+
+JO — Copies address from r12 into PC if Overflow flag is active.
+
+JVB — Copies address from r12 into PC if Vblank hardware signal is active.
+
+CALL — Pushes next sequential PC onto stack, then branches to address in r15 (MAR).
+
+RET — Pops top address value from stack (r14) and updates PC.
+
+Memory & Stack Operations
+
+LOAD <dest> — Reads RAM from address stored in r15 (MAR) into dest.
+
+STR <src> — Writes content of src into RAM address stored in r15 (MAR).
+
+PUSH <src> — Increments stack pointer r14 (SP), then saves src value at that RAM address.
+
+POP <dest> — Reads RAM value from stack pointer r14 into dest, then decrements r14.
+
+NOP — Does nothing for one clock cycle.
+
+HALT — Stops processor execution loops until external reset.
+
+3. Programming Logic & Patterns
+
+Memory Access Pattern: Because LOAD and STR rely on r15 (MAR) as a pointer, you must first move your target address into r15 before executing memory commands.
+
+Jump Target Pattern: Before triggering any jump (JMP, JZ, etc.), ensure the target address is loaded into r12 (JTR).
+
+Accumulator Pattern: Since ALU operations target r13 (ACC) by default, ensure operands are positioned correctly in source registers prior to execution.
