@@ -6,29 +6,18 @@
 #include "Includes/registers.h"
 #include "Includes/Memory.h"
 
-
 using namespace std;
 
 const int emulation_screen_width = 256;
 const int emulation_screen_height = 192;
 
-typedef struct {
-    uint16_t x;
-    uint16_t y;
-    bool pixel_color; 
-} pixel;
-
 // Emulation Globals
-
-
 bool global_clock;
 ALU global_alu;
 Register program_counter;
 RegisterFile global_registerfile;
 RAM data_memory;
 ROM instruction_memory;
-
-
 
 int main() {
     const int pixel_scaling_factor = 4;
@@ -37,42 +26,38 @@ int main() {
                emulation_screen_height * pixel_scaling_factor,
                "Siddhcesna - III");
 
-    pixel screen[emulation_screen_height][emulation_screen_width];
-    for(int y = 0; y < emulation_screen_height; y++){
-        for(int x = 0; x < emulation_screen_width; x++){
-            screen[y][x].x = x;
-            screen[y][x].y = y;
-            screen[y][x].pixel_color = false; 
+    SetTargetFPS(60);
+
+    Image screen_image = GenImageColor(emulation_screen_width, emulation_screen_height, BLACK);
+    
+    for (int y = 0; y < emulation_screen_height; y++) {
+        for (int x = 0; x < emulation_screen_width; x++) {
+            ImageDrawPixel(&screen_image, x, y, BLACK); 
         }
     }
 
-    SetTargetFPS(60);
-
+    Texture2D screen_texture = LoadTextureFromImage(screen_image);
+    
+    UnloadImage(screen_image);
 
     while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(BLACK); 
-        for(int y = 0; y < emulation_screen_height; y++){
-            for(int x = 0; x < emulation_screen_width; x++){
-                
-                Color pix_color = screen[y][x].pixel_color ? WHITE : BLACK;
-                DrawRectangle(
-                    x * pixel_scaling_factor, 
-                    y * pixel_scaling_factor, 
-                    pixel_scaling_factor, 
-                    pixel_scaling_factor, 
-                    pix_color
-                );
-            }
-        }
+        
 
+        
+        BeginDrawing();
+            ClearBackground(BLACK); 
+            
+            DrawTextureEx(screen_texture, Vector2{0, 0}, 0.0f, pixel_scaling_factor, WHITE);
+            
         EndDrawing();
     }
     
+    // Clean up GPU assets cleanly on exit
+    UnloadTexture(screen_texture);
     CloseWindow();
     return 0;
 }
 
 /* 
-g++ main.cpp -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game && ./game
-*/ 
+g++ Emulator/main.cpp -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game && ./game
+*/
